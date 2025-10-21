@@ -23,7 +23,11 @@
     "WuKongDataSource/Assets/Lang"
   ],
   "dependencies": {
-    "WuKongBase": [],
-    "WuKongIMSDK": []
+    "WuKongBase": [
+
+    ],
+    "WuKongIMSDK": [
+
+    ]
   }
 }

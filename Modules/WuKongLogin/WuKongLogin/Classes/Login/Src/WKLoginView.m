@@ -69,8 +69,11 @@
     
     [self addSubview:self.forgetPwdBtn];
     [self addSubview:self.loginBtn];
-    [self addSubview:self.registerTipLbl];
-    [self addSubview:self.registerBtn];
+    /*
+     测试 注册模块
+     */
+//    [self addSubview:self.registerTipLbl];
+//    [self addSubview:self.registerBtn];
     
     
     

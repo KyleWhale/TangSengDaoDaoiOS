@@ -16,7 +16,7 @@
 #import "SELUpdateAlert.h"
 
 
-#define SERVER_IP @"api.botgate.cn" // xxx.xxx.xx.xx:8090
+#define SERVER_IP @"api.epchat.pw" // xxx.xxx.xx.xx:8090
 #define HTTPS_ON true // https开关
 
 

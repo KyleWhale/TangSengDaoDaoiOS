@@ -39,7 +39,9 @@
     "stdc++"
   ],
   "dependencies": {
-    "WuKongIMSDK": [],
+    "WuKongIMSDK": [
+
+    ],
     "CocoaLumberjack": [
       "~> 3.0"
     ],
@@ -112,7 +114,9 @@
     "ZLImageEditor": [
       "~> 1.1.1"
     ],
-    "ActionSheetPicker-3.0": [],
+    "ActionSheetPicker-3.0": [
+
+    ],
     "AsyncDisplayKit": [
       "~> 1.0"
     ],

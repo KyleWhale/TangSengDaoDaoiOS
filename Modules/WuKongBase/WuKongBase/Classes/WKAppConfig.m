@@ -27,10 +27,10 @@
 -(instancetype) init {
     self = [super init];
     if(self) {
-        self.appName = @"唐僧叨叨";
-        self.shortName = @"WuKong ID";
+        self.appName = @"EpChat";
+        self.shortName = @"";
         self.appID = @""; // appstore的id
-        self.appSchemaPrefix = @"wukong";
+        self.appSchemaPrefix = @"epchat";
         self.clusterOn = YES;
         
          // ---------- 基础配置 ----------
