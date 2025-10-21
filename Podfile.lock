@@ -47,6 +47,7 @@ PODS:
   - lottie-ios (2.5.3)
   - M80AttributedLabel (1.9.9)
   - Masonry (1.1.0)
+  - MBCircularProgressBar (0.3.5)
   - MBProgressHUD (1.1.0)
   - MJRefresh (3.7.5)
   - PromiseKit/CorePromise (6.18.1)
@@ -112,6 +113,10 @@ PODS:
   - WuKongDataSource (0.1.0):
     - WuKongBase
     - WuKongIMSDK
+  - WuKongFile (0.1.0):
+    - MBCircularProgressBar
+    - WuKongBase
+    - WuKongIMSDK
   - WuKongIMSDK (1.1.0):
     - 25519 (~> 2.0.2)
     - CocoaAsyncSocket (~> 7.6.5)
@@ -120,6 +125,8 @@ PODS:
     - Masonry
     - PromiseKit/CorePromise (~> 6.0)
     - SDWebImage (~> 5.9.1)
+    - WuKongBase
+  - WuKongRTC (0.1.0):
     - WuKongBase
   - YBImageBrowser/NOSD (3.0.9):
     - YYImage
@@ -146,8 +153,10 @@ DEPENDENCIES:
   - WuKongBase (from `./Modules/WuKongBase`)
   - WuKongContacts (from `./Modules/WuKongContacts`)
   - WuKongDataSource (from `./Modules/WuKongDataSource`)
+  - WuKongFile (from `./Modules/WuKongFile`)
   - WuKongIMSDK (from `./Modules/WuKongIMiOSSDK`)
   - WuKongLogin (from `./Modules/WuKongLogin`)
+  - WuKongRTC (from `./Modules/WuKongRTC`)
   - YBImageBrowser/NOSD (from `https://github.com/tangtaoit/YBImageBrowser.git`)
   - YYImage/WebP (from `https://github.com/tangtaoit/YYImage.git`)
 
@@ -168,6 +177,7 @@ SPEC REPOS:
     - lottie-ios
     - M80AttributedLabel
     - Masonry
+    - MBCircularProgressBar
     - MBProgressHUD
     - MJRefresh
     - PromiseKit
@@ -197,10 +207,14 @@ EXTERNAL SOURCES:
     :path: "./Modules/WuKongContacts"
   WuKongDataSource:
     :path: "./Modules/WuKongDataSource"
+  WuKongFile:
+    :path: "./Modules/WuKongFile"
   WuKongIMSDK:
     :path: "./Modules/WuKongIMiOSSDK"
   WuKongLogin:
     :path: "./Modules/WuKongLogin"
+  WuKongRTC:
+    :path: "./Modules/WuKongRTC"
   YBImageBrowser:
     :git: https://github.com/tangtaoit/YBImageBrowser.git
   YYImage:
@@ -238,6 +252,7 @@ SPEC CHECKSUMS:
   lottie-ios: a50d5c0160425cd4b01b852bb9578963e6d92d31
   M80AttributedLabel: 77fedfe63804c989a6de0fa4d400ea8cad3ab441
   Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
+  MBCircularProgressBar: 0b795b722a5eb5b0923822f90474e2576a1a7855
   MBProgressHUD: e7baa36a220447d8aeb12769bf0585582f3866d9
   MJRefresh: fdf5e979eb406a0341468932d1dfc8b7f9fce961
   PromiseKit: 49d70c53d5d20e346beaea4b276b5dd2ab446bb4
@@ -256,13 +271,15 @@ SPEC CHECKSUMS:
   WuKongBase: c0f055a22823b599f49655a79cbfaa142ba6b954
   WuKongContacts: 9a7748952bd1760ba84fe7f595200d4c19d52d8b
   WuKongDataSource: 239cffd62c1d6d14b137102de5ec59b6c1f16cf7
+  WuKongFile: bfce784c31e3b58e18710980064e6b884ef8150e
   WuKongIMSDK: 9c93f5e5e5038e0f11618cb1f87c85c09edcca79
   WuKongLogin: 2d596bfee21d022435908bd10ea56739e5e54dc7
+  WuKongRTC: b0283106dd909e0b42aed168de962a04757f30a1
   YBImageBrowser: 7ecc8bf33ffa5f3b94c397c29b4f3638dd37f527
   YYImage: 6db68da66f20d9f169ceb94dfb9947c3867b9665
   ZLImageEditor: ee86f044fb7c5dec6b5de49eb7bb6fd42286f2ae
   ZLPhotoBrowser: 6fb0eff03c8269001e29ef233e7bdab0691e05fe
 
-PODFILE CHECKSUM: efe7648547fa8c737ff36956dbacbf4e5fd72043
+PODFILE CHECKSUM: e794da7477a481db2b20f1c3fd5a1c5d55990521
 
 COCOAPODS: 1.16.2

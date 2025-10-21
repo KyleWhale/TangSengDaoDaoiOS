@@ -67,6 +67,11 @@
     config.reportUrl = [NSString stringWithFormat:@"%@report/html",API_BASE_URL]; //举报地址
     config.privacyAgreementUrl = [NSString stringWithFormat:@"%@privacy_policy.html",WEB_URL]; //隐私协议
     config.userAgreementUrl = [NSString stringWithFormat:@"%@user_agreement.html",WEB_URL]; //用户协议
+    
+    NSMutableArray <WKRTCIceServer *> *ices = [[NSMutableArray alloc] init];
+    [ices insertObject:[[WKRTCIceServer alloc] initWithURLStrings:@[@"turn:47.121.119.96:3478?transport=udp"] username:@"user1" credential:@"password1"] atIndex:0];
+    config.rtcIces = ices;
+    
     [WKApp shared].config = config;
     
     // app首页设置
