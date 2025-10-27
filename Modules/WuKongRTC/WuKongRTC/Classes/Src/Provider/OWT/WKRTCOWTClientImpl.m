@@ -608,11 +608,22 @@ static WKRTCOWTConferenceClientImpl *_confferenceInstance;
 
     
     OWTConferenceSubscribeOptions *options = [OWTConferenceSubscribeOptions new];
+    
+    // 配置视频编解码器
     OWTConferenceVideoSubscriptionConstraints *video = [OWTConferenceVideoSubscriptionConstraints new];
     OWTVideoCodecParameters *videoCodec = [[OWTVideoCodecParameters alloc] init];
     videoCodec.name = OWTVideoCodecH264;
     video.codecs = @[videoCodec];
     options.video = video;
+    
+    // 配置音频编解码器 - 添加 OPUS 和 PCMU 支持以兼容Android端
+    OWTConferenceAudioSubscriptionConstraints *audio = [OWTConferenceAudioSubscriptionConstraints new];
+    OWTAudioCodecParameters *opusCodec = [[OWTAudioCodecParameters alloc] init];
+    opusCodec.name = OWTAudioCodecOpus;
+    OWTAudioCodecParameters *pcmuCodec = [[OWTAudioCodecParameters alloc] init];
+    pcmuCodec.name = OWTAudioCodecPcmu;
+    audio.codecs = @[opusCodec, pcmuCodec];
+    options.audio = audio;
 
     [self.client subscribe:stream withOptions:options onSuccess:^(OWTConferenceSubscription * sub) {
         complete(sub,nil);
@@ -668,16 +679,27 @@ static WKRTCOWTConferenceClientImpl *_confferenceInstance;
 
 -(void)publishStream:(WKRTCStream*)stream to:(NSString*)to{
     OWTPublishOptions* options=[[OWTPublishOptions alloc] init];
+    
+    // 配置音频编解码器 - 添加 OPUS 和 PCMU 支持以兼容Android端
     OWTAudioCodecParameters* opusParameters=[[OWTAudioCodecParameters alloc] init];
     opusParameters.name=OWTAudioCodecOpus;
-    OWTAudioEncodingParameters *audioParameters=[[OWTAudioEncodingParameters alloc] init];
-    audioParameters.codec=opusParameters;
-    options.audio=[NSArray arrayWithObjects:audioParameters, nil];
+    OWTAudioEncodingParameters *audioParameters1=[[OWTAudioEncodingParameters alloc] init];
+    audioParameters1.codec=opusParameters;
+    
+    OWTAudioCodecParameters* pcmuParameters=[[OWTAudioCodecParameters alloc] init];
+    pcmuParameters.name=OWTAudioCodecPcmu;
+    OWTAudioEncodingParameters *audioParameters2=[[OWTAudioEncodingParameters alloc] init];
+    audioParameters2.codec=pcmuParameters;
+    
+    options.audio=[NSArray arrayWithObjects:audioParameters1, audioParameters2, nil];
+    
+    // 配置视频编解码器
     OWTVideoCodecParameters *h264Parameters=[[OWTVideoCodecParameters alloc] init];
     h264Parameters.name=OWTVideoCodecH264;
     OWTVideoEncodingParameters *videoParameters=[[OWTVideoEncodingParameters alloc]init];
     videoParameters.codec=h264Parameters;
     options.video=[NSArray arrayWithObjects:videoParameters, nil];
+    
     NSLog(@"publishStream---->发布流");
     [self.client publish:stream.stream withOptions:options onSuccess:^(OWTConferencePublication * pub) {
         NSLog(@"pub---->%@",pub);
