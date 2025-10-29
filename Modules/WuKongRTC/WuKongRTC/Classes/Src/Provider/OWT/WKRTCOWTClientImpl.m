@@ -105,12 +105,14 @@ static WKRTCOWTP2PClientImpl *_instance;
     
     __weak typeof(self) weakSelf = self;
     [self.client offerForConstraints:self.sdpConstrains completionHandler:^(RTCSessionDescription * _Nullable sdp, NSError * _Nullable error) {
-        [weakSelf.client setLocalDescription:sdp completionHandler:^(NSError * _Nullable error) {
+        // 修改SDP以优先使用Opus编解码器，确保跨平台兼容性
+        RTCSessionDescription *modifiedSDP = [weakSelf preferOpusCodec:sdp];
+        [weakSelf.client setLocalDescription:modifiedSDP completionHandler:^(NSError * _Nullable error) {
             if (error) {
                 NSLog(@"##### setLocalDescriptionFailed %@",error);
             }
             else {
-                [weakSelf sendSDP:sdp];
+                [weakSelf sendSDP:modifiedSDP];
             }
         }];
     }];
@@ -156,6 +158,71 @@ static WKRTCOWTP2PClientImpl *_instance;
     NSError*parseError =nil;
     NSData *jsonData = [NSJSONSerialization dataWithJSONObject:dic options:NSJSONWritingPrettyPrinted error:&parseError];
     return [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+}
+
+// 修改SDP以优先使用Opus编解码器，确保跨平台兼容性（iOS-Android）
+- (RTCSessionDescription *)preferOpusCodec:(RTCSessionDescription *)sdp {
+    if (!sdp) {
+        return sdp;
+    }
+    
+    NSString *sdpString = sdp.sdp;
+    NSMutableArray *lines = [[sdpString componentsSeparatedByString:@"\n"] mutableCopy];
+    NSInteger audioIndex = -1;
+    NSInteger opusPayloadType = -1;
+    
+    // 查找音频媒体行和Opus编解码器的payload type
+    for (NSInteger i = 0; i < lines.count; i++) {
+        NSString *line = lines[i];
+        
+        // 找到音频媒体行
+        if ([line hasPrefix:@"m=audio"]) {
+            audioIndex = i;
+        }
+        
+        // 找到Opus编解码器的payload type
+        if ([line containsString:@"opus/48000/2"] || [line containsString:@"rtpmap:"] && [line containsString:@"opus"]) {
+            NSArray *components = [line componentsSeparatedByString:@":"];
+            if (components.count >= 2) {
+                NSString *payload = [[components[1] componentsSeparatedByString:@" "] firstObject];
+                opusPayloadType = [payload integerValue];
+            }
+        }
+    }
+    
+    // 如果找到了音频媒体行和Opus编解码器
+    if (audioIndex != -1 && opusPayloadType != -1) {
+        NSString *audioLine = lines[audioIndex];
+        NSArray *components = [audioLine componentsSeparatedByString:@" "];
+        
+        if (components.count > 3) {
+            NSMutableArray *newComponents = [NSMutableArray arrayWithArray:components];
+            NSMutableArray *payloadTypes = [NSMutableArray array];
+            
+            // 收集所有payload types
+            for (NSInteger i = 3; i < components.count; i++) {
+                [payloadTypes addObject:components[i]];
+            }
+            
+            // 移除Opus的payload type
+            NSString *opusPayload = [NSString stringWithFormat:@"%ld", (long)opusPayloadType];
+            [payloadTypes removeObject:opusPayload];
+            
+            // 将Opus放在第一位
+            [payloadTypes insertObject:opusPayload atIndex:0];
+            
+            // 重新构建音频媒体行
+            NSMutableArray *rebuiltLine = [NSMutableArray arrayWithArray:@[components[0], components[1], components[2]]];
+            [rebuiltLine addObjectsFromArray:payloadTypes];
+            
+            lines[audioIndex] = [rebuiltLine componentsJoinedByString:@" "];
+            
+            NSLog(@"#### SDP已修改，优先使用Opus编解码器 (payload type: %ld)", (long)opusPayloadType);
+        }
+    }
+    
+    NSString *modifiedSdpString = [lines componentsJoinedByString:@"\n"];
+    return [[RTCSessionDescription alloc] initWithType:sdp.type sdp:modifiedSdpString];
 }
 
 - (RTCPeerConnectionFactory *)factory {
@@ -224,7 +291,9 @@ static WKRTCOWTP2PClientImpl *_instance;
 
 - (void)setRemoteSDP:(RTCSessionDescription *)sdp type:(RTCSdpType)type {
     __weak typeof(self) weakSelf = self;
-    [self.client setRemoteDescription:sdp completionHandler:^(NSError * _Nullable error) {
+    // 修改远程SDP以优先使用Opus编解码器
+    RTCSessionDescription *modifiedRemoteSDP = [self preferOpusCodec:sdp];
+    [self.client setRemoteDescription:modifiedRemoteSDP completionHandler:^(NSError * _Nullable error) {
         if (error == nil) {
             if (type == RTCSdpTypeOffer) {
                 [weakSelf.client answerForConstraints:weakSelf.sdpConstrains completionHandler:^(RTCSessionDescription * _Nullable ansSDP, NSError * _Nullable error) {
@@ -232,12 +301,14 @@ static WKRTCOWTP2PClientImpl *_instance;
                         NSLog(@"#### answerForConstraintsError %@",error);
                         return;
                     }
-                    [weakSelf.client setLocalDescription:ansSDP completionHandler:^(NSError * _Nullable error) {
+                    // 修改应答SDP以优先使用Opus编解码器
+                    RTCSessionDescription *modifiedAnsSDP = [weakSelf preferOpusCodec:ansSDP];
+                    [weakSelf.client setLocalDescription:modifiedAnsSDP completionHandler:^(NSError * _Nullable error) {
                         if (error) {
                             NSLog(@"#### setLocalDescriptionError %@",error);
                         }
                     }];
-                    [weakSelf sendSDP:ansSDP];
+                    [weakSelf sendSDP:modifiedAnsSDP];
                     
                     if(WKRTCManager.shared.isCallCreater && WKRTCManager.shared.currentChannel && WKRTCManager.shared.currentChannel.channelType == WK_PERSON) {
                         NSLog(@"setRemoteSDP-----publish---->");
